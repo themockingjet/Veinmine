@@ -6,7 +6,6 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using JetBrains.Annotations;
 using ServerSync;
 using UnityEngine;
 
@@ -16,7 +15,7 @@ namespace Veinmine
     public class VeinMinePlugin : BaseUnityPlugin
     {
         internal const string ModName = "Veinmine";
-        internal const string ModVersion = "1.2.8";
+        internal const string ModVersion = "0.1.1";
         internal const string Author = "wisehorror";
         private const string ModGUID = $"com.{Author}.{ModName}";
         private static string ConfigFileName = $"{ModGUID}.cfg";
@@ -167,27 +166,6 @@ namespace Veinmine
             bool synchronizedSetting = true)
         {
             return config(group, name, value, new ConfigDescription(description), synchronizedSetting);
-        }
-
-        private class ConfigurationManagerAttributes
-        {
-            [UsedImplicitly] public int? Order = null!;
-            [UsedImplicitly] public bool? Browsable = null!;
-            [UsedImplicitly] public string Category = null!;
-            [UsedImplicitly] public Action<ConfigEntryBase> CustomDrawer = null!;
-        }
-
-        class AcceptableShortcuts : AcceptableValueBase
-        {
-            public AcceptableShortcuts() : base(typeof(KeyboardShortcut))
-            {
-            }
-
-            public override object Clamp(object value) => value;
-            public override bool IsValid(object value) => true;
-
-            public override string ToDescriptionString() =>
-                $"# Acceptable values: {string.Join(", ", UnityInput.Current.SupportedKeyCodes)}";
         }
 
         #endregion

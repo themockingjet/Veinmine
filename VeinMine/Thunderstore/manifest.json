@@ -1,8 +1,8 @@
 {
-  "name": "Veinmine",
-  "version_number": "1.2.8",
-  "website_url": "https://www.nexusmods.com/valheim/mods/556",
-  "description": "Allows you to mine a whole rock/ore vein by holding down a key. Progressive mode is a less OP version meant to fit in better in Vanilla",
+  "name": "StrVeinMine",
+  "version_number": "0.1.1",
+  "website_url": "https://github.com/WiseHorror/Veinmine",
+  "description": "StrVeinMine is an unofficial private-server compatibility build maintained by $tr on Hexium. No Thunderstore namespace or upload account is assigned; not endorsed by upstream authors or maintainers.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2105"
   ]

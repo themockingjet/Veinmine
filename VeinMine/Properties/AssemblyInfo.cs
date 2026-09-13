@@ -7,7 +7,7 @@ using Veinmine;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle(VeinMinePlugin.ModName)]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Unofficial private-server compatibility build; no upstream endorsement.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany($"{VeinMinePlugin.Author} & Azumatt")]
 [assembly: AssemblyProduct(VeinMinePlugin.ModName)]

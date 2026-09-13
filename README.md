@@ -1,103 +1,110 @@
-![Valheim VeinMine](https://i.imgur.com/OAfRGXK.jpg)
+# StrVeinMine
 
-Tired of mining for ages?  
-With Veinmine you're able to mine the whole ore/rock vein at once!  
-You can do this by holding down the assigned key (Left Alt by default) while mining!
+## Unofficial community compatibility build for Valheim
 
-`Version checks with itself. If installed on the server, it will kick clients who do not have it installed.`
+> **Version 0.1.1** - prepared for a private Valheim server and maintained in the community by `$tr` on Hexium.
 
-`This mod uses ServerSync, if installed on the server and all clients, it will sync all configs to client`
+This is an unofficial compatibility build of the upstream VeinMine mod. It is not an official release and is not endorsed, supported, or published by WiseHorror, Azumatt, Odin Plus, Thunderstore, or Nexus Mods.
 
-`This mod uses a file watcher. If the configuration file is not changed with BepInEx Configuration manager, but changed in the file directly on the server, upon file save, it will sync the changes to all clients.`
+The public package name is `StrVeinMine`, which is valid for package validators that permit only letters, digits, and underscores. It does not establish a Hexium or Thunderstore publisher namespace, team, or upload account. Publishing identity remains pending operator confirmation.
 
-## **Version 1.0.0 - Progressive mode added!**
+## Features
 
-### **Please delete your previous config when updating as it might break something.**
+- Mine connected rock and ore deposits while holding the configured vein-mine key (`Left Alt` by default).
+- Supports current `MineRock5` deposits and legacy `MineRock` deposits.
+- Uses Valheim's native damage handlers so native drops, destruction, health/network state, durability, and XP behavior remain intact.
+- Includes progressive mining, configurable radius, durability, XP, and spread-damage controls.
+- Includes rebuilt ServerSync support for synchronized server configuration without the obsolete Valheim connection-error UI patch.
+- Allows each client to suppress only native hit and destruction effects during vein mining to reduce large legacy-deposit effect bursts.
 
-You can now enable progressive mode in the config, making it so veinmining is scaled by your Pickaxes level. This is
-intended to be a less OP way of veinmining, where the tradeoff is taking higher durability damage (and less xp) than if
-you mined manually.
+## Compatibility and exact-build requirement
 
-The radius of the veinmined area is also scaled by your Pickaxes level.
+This build was compiled and statically validated against staged Valheim **1.0.12** assemblies for the operator's private server. It is not a general public compatibility claim, and this package does not represent a live game-server runtime test.
 
-It works by checking for rocks in a radius set by the Progressive Level Multiplier value in the config. This value is
-multiplied by your Pickaxes level to obtain a radius.
+> **Client and server warning:** install the exact same `StrVeinMine` **0.1.1** DLL on the server and every connecting client. Do not rely on version text alone; verify this SHA-256 hash:
+>
+> `7f187a2a2b1acb8331d7b32642504c7b21450ffa9235c1f6a35cfc88474220e0`
 
-By default, it's set to 0.1 so assuming your Pickaxes level is 20, the radius will be 0.1 * 20 = 2.
+VeinMine's bundled configuration synchronization performs version checks. Mixing DLLs can prevent clients from connecting or leave players with incompatible behavior.
 
-What does 2 mean, you ask?
+## Installation
 
-It's simple! A standard 2x2 floor piece has a length of 2, exactly like its name suggests.
+### Hexium package installation
 
----
+Use this method only after an operator has published `StrVeinMine` to a confirmed Hexium publisher namespace:
+
+1. Install the exact `StrVeinMine` version `0.1.1` on the server and every client through Hexium.
+2. Confirm the displayed archive or DLL hash matches the value above.
+3. Restart the server and clients before connecting.
+
+No Hexium or Thunderstore upload account is assigned by this repository or release package.
+
+### Manual installation
+
+1. Stop the Valheim server and all clients.
+2. Back up the existing `Veinmine.dll` from each `BepInEx/plugins` directory.
+3. Extract the release ZIP and copy its `Veinmine.dll` into `BepInEx/plugins` on the server and every client.
+4. Verify the copied DLL SHA-256 matches the value above.
+5. Start the server, then start the clients.
+
+The package contains a PDB for diagnostics, a checksum file, the changelog, and the original MIT license. Only `Veinmine.dll` is required at runtime.
+
+## Configuration
+
+The configuration file is `BepInEx/config/com.wisehorror.Veinmine.cfg`. Server-synced settings are controlled by the server when configuration locking is enabled. Local settings remain per-client.
+
+| Section | Setting | Default | Scope | Details |
+|---|---|---:|---|---|
+| 1 - General | Lock Configuration | On | Server-synced | Limits synchronized configuration changes to server administrators. |
+| 2 - General | Veinmine | Left Alt | Local | Hold this key while mining to activate vein mining. |
+| 2 - General | Durability | On | Server-synced | Charges durability as though each mined section were mined manually. |
+| 3 - Visual | Remove Effects | Off | Local | Suppresses only native hit and destruction effects during Alt vein mining. |
+| 4 - Progressive | Enable Progressive | Off | Server-synced | Limits the mined area according to Pickaxes skill. |
+| 4 - Progressive | Radius Multiplier | 0.1 | Server-synced | Multiplied by Pickaxes skill to calculate progressive radius. |
+| 4 - Progressive | Durability Multiplier | 1.0 | Server-synced | Adjusts progressive-mode durability loss. |
+| 4 - Progressive | XP Multiplier | 0.2 | Server-synced | Adjusts XP awarded per progressive mined section. |
+| 4 - Progressive | Enable Spread Damage | Off | Server-synced | Distributes hit damage instead of applying full damage to each section. |
+| 4 - Progressive | Spread Damage Type | Distance | Server-synced | Uses distance or Pickaxes level to scale spread damage. |
 
 <details>
-<summary><b>Installation Instructions</b></summary>
+<summary><strong>Progressive mining details</strong></summary>
 
-***You must have BepInEx installed correctly! I can not stress this enough.***
+With progressive mode enabled, the mining radius is `Pickaxes skill × Radius Multiplier`. For example, Pickaxes level 30 with the default `0.1` multiplier gives a radius of 3.
 
-### Manual Installation
+`Spread Damage Type` is used only when spread damage is enabled:
 
-`Note: (Manual installation is likely how you have to do this on a server, make sure BepInEx is installed on the server correctly)`
-
-1. **Download the latest release of BepInEx.**
-2. **Extract the contents of the zip file to your game's root folder.**
-3. **Download the latest release of VeinMine from Thunderstore.io. (or Nexus Mods)**
-4. **Extract the contents of the zip file to the `BepInEx/plugins` folder.**
-5. **Launch the game.**
-
-### Installation through Vortex
-
-https://www.youtube.com/watch?v=Kt_6lwGd2Ns
-
-### Installation through r2modman or Thunderstore Mod Manager
-
-1. **Install [r2modman](https://valheim.thunderstore.io/package/ebkr/r2modman/)
-   or [Thunderstore Mod Manager](https://www.overwolf.com/app/Thunderstore-Thunderstore_Mod_Manager).**
-
-   > For r2modman, you can also install it through the Thunderstore site.
-   ![](https://i.imgur.com/s4X4rEs.png "r2modman Download")
-
-   > For Thunderstore Mod Manager, you can also install it through the Overwolf app store
-   ![](https://i.imgur.com/HQLZFp4.png "Thunderstore Mod Manager Download")
-2. **Open the Mod Manager and search for "" under the Online
-   tab. `Note: You can also search for "Azumatt" to find all my mods.`**
-
-   `The image below shows VikingShip as an example, but it was easier to reuse the image.`
-
-   ![](https://i.imgur.com/5CR5XKu.png)
-
-3. **Click the Download button to install the mod.**
-4. **Launch the game.**
+- **Distance:** farther sections receive less pickaxe damage.
+- **Level:** damage scales with Pickaxes skill.
 
 </details>
 
-<br>
-<br>
+<details>
+<summary><strong>Remove Effects details</strong></summary>
 
-`Feel free to reach out to me on discord if you need manual download assistance.`
+`Remove Effects` is intentionally local and is not synchronized by the server. Enable it separately on each client that needs it. While the vein-mine key is held, it suppresses the native hit and destruction effect lists for both modern `MineRock5` and legacy `MineRock` sections.
 
-# Current Author (Maintainer) Information
+It does not suppress or replace damage, item drops, deposit destruction, health/ZDO updates, network RPCs, durability, XP, noise, or player statistics.
 
-### Azumatt
+</details>
 
-`DISCORD:` Azumatt#2625
+## Known behavior and troubleshooting
 
-`STEAM:` https://steamcommunity.com/id/azumatt/
+| Symptom | What to check |
+|---|---|
+| Vein mining does not activate | Hold the configured key while using a valid pickaxe on a valid deposit. Tool tier and normal Valheim damage checks still apply. |
+| Client cannot connect after updating | Stop the server and all clients, then replace every copy with the exact 0.1.1 DLL and verify the SHA-256 hash. |
+| Large legacy stone deposit causes visual lag | Enable `3 - Visual / Remove Effects` on the affected client, then reconnect or reload the configuration. |
+| A local visual setting does not match another player | This is expected for `Veinmine` key binding and `Remove Effects`; both are intentionally local. |
+| Server configuration does not update | Confirm the server configuration is unlocked for an administrator. Use a BepInEx configuration manager where available, then restart if the file watcher does not apply the change. |
+| Unexpected gameplay issue | Treat this as a private-server compatibility build, collect BepInEx logs and the DLL hash, and test with all participants on the same package. |
 
-`GITHUB:` https://github.com/AzumattDev
+## Credits and license
 
-For Questions or Comments, find me in the Odin Plus Team Discord or in mine:
+VeinMine is upstream work copyrighted by **WiseHorror/Azumatt (2023)**. This community compatibility build retains the original MIT license and copyright notice without changing ownership or implying upstream endorsement.
 
-[![https://i.imgur.com/XXP6HCU.png](https://i.imgur.com/XXP6HCU.png)](https://discord.gg/Pb6bVMnFb2)
-<a href="https://discord.gg/pdHgy6Bsng"><img src="https://i.imgur.com/Xlcbmm9.png" href="https://discord.gg/pdHgy6Bsng" width="175" height="175"></a>
+- Original source: <https://github.com/WiseHorror/Veinmine>
+- Included license: [LICENSE.md](./VeinMine/LICENSE.md)
+- Community-maintainer attribution for this build: `$tr` on Hexium
+- Package thumbnail: original artwork created for this community compatibility build
 
-<hr>
-
-# Original Author Information
-
-### WiseHorror
-
-`DISCORD:` WiseHorror (wisehorror)
-
-`GitHub:` https://github.com/WiseHorror
+No Thunderstore publisher namespace, team, or upload account is claimed by this project.
