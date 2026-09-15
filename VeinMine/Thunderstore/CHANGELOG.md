@@ -1,5 +1,33 @@
 # StrVeinMine Community Compatibility Build Changelog
 
+## 0.2.2
+
+- Remove the source-build instructions from the published README.
+- Bump the package version so package managers refresh the corrected README
+  instead of retaining a cached 0.2.1 package.
+
+## 0.2.1
+
+- Powered tree felling now carries through the native tree-log spawn flow.
+  A single qualifying Veinmine-key axe strike destroys the spawned log
+  segments after Valheim's brief spawn-protection delay, producing native wood
+  drops without additional player hits.
+
+## 0.2.0
+
+- Modernize the development build to SDK-style MSBuild and a current .NET SDK.
+- Replace `packages.config`, the old ILRepack task, and machine-specific
+  legacy project settings with maintained SDK package references and explicit
+  Valheim/BepInEx build paths.
+- Publicize the locally installed Valheim assemblies at build time with
+  `BepInEx.AssemblyPublicizer.MSBuild`.
+- Retain native `MineRock` and `MineRock5` handling for broad deposit support
+  on current Valheim.
+- Add a server-synchronized `Enable Trees` setting, disabled by default.
+  Holding the configured Veinmine key with an axe now destroys a supported
+  standing tree or log in one native hit.
+- Package `ServerSync.dll` explicitly alongside `Veinmine.dll`.
+
 ## 0.1.1
 
 - Bump the immutable public package version after the 0.1.0 upload so servers and clients can identify this refreshed build correctly.

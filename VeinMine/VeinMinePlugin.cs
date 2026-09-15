@@ -15,7 +15,7 @@ namespace Veinmine
     public class VeinMinePlugin : BaseUnityPlugin
     {
         internal const string ModName = "Veinmine";
-        internal const string ModVersion = "0.1.1";
+        internal const string ModVersion = "0.2.2";
         internal const string Author = "wisehorror";
         private const string ModGUID = $"com.{Author}.{ModName}";
         private static string ConfigFileName = $"{ModGUID}.cfg";
@@ -23,6 +23,7 @@ namespace Veinmine
         internal static string ConnectionError = "";
         private readonly Harmony _harmony = new(ModGUID);
         public static ManualLogSource logger = BepInEx.Logging.Logger.CreateLogSource(ModName);
+        internal static VeinMinePlugin? Instance { get; private set; }
 
         private static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
 
@@ -40,6 +41,7 @@ namespace Veinmine
 
         void Awake()
         {
+            Instance = this;
             _serverConfigLocked = config("1 - General",
                 "Lock Configuration",
                 Toggle.On,
@@ -56,6 +58,11 @@ namespace Veinmine
                 "Durability",
                 Toggle.On,
                 "Veinmining takes durability as if you mined every section manually.");
+
+            enableTrees = config("2 - General",
+                "Enable Trees",
+                Toggle.Off,
+                "Holding the veinmine key while using an axe destroys a standing tree or log with one hit.");
 
             removeEffects = config("3 - Visual",
                 "Remove Effects",
@@ -103,6 +110,11 @@ namespace Veinmine
 
         private void OnDestroy()
         {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+
             Config.Save();
         }
 
@@ -137,6 +149,7 @@ namespace Veinmine
         private static ConfigEntry<Toggle> _serverConfigLocked = null!;
         public static ConfigEntry<KeyboardShortcut> veinMineKey = null!;
         public static ConfigEntry<Toggle> veinMineDurability = null!;
+        public static ConfigEntry<Toggle> enableTrees = null!;
         public static ConfigEntry<Toggle> removeEffects = null!;
         public static ConfigEntry<Toggle> progressiveMode = null!;
         public static ConfigEntry<Toggle> enableSpreadDamage = null!;

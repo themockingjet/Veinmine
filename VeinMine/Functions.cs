@@ -4,6 +4,8 @@ namespace Veinmine
 {
     class Functions
     {
+        internal const float PoweredTreeDamage = 1_000_000f;
+
         public static float GetSkillIncreaseStep(Skills playerSkills, Skills.SkillType skillType)
         {
             if (playerSkills != null)
@@ -35,6 +37,33 @@ namespace Veinmine
         public static float GetDistanceFromPlayer(Vector3 playerPos, Vector3 colliderPos)
         {
             return Vector3.Distance(playerPos, colliderPos);
+        }
+
+        public static bool TryPrepareTreeFellingHit(HitData hit)
+        {
+            if (hit == null ||
+                VeinMinePlugin.enableTrees.Value != VeinMinePlugin.Toggle.On ||
+                !VeinMinePlugin.veinMineKey.Value.IsKeyHeld())
+            {
+                return false;
+            }
+
+            Player? player = Player.GetClosestPlayer(hit.m_point, 5f);
+            if (player == null || hit.m_attacker != player.GetZDOID())
+            {
+                return false;
+            }
+
+            ItemDrop.ItemData? weapon = player.GetCurrentWeapon();
+            if (weapon == null ||
+                weapon.GetDamage().m_chop <= 0f ||
+                hit.m_damage.m_chop <= 0f)
+            {
+                return false;
+            }
+
+            hit.m_damage.m_chop = Mathf.Max(hit.m_damage.m_chop, PoweredTreeDamage);
+            return true;
         }
 
         public static HitData SpreadDamage(HitData hit, Player player)

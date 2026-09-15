@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
@@ -27,6 +28,116 @@ namespace Veinmine
 
             destroyedEffect = _destroyedEffect;
             hitEffect = _hitEffect;
+        }
+    }
+
+    internal static class PoweredTreeDestruction
+    {
+        private const float LogDamageDelay = 0.25f;
+
+        [ThreadStatic]
+        private static Stack<HitData>? _pendingHits;
+
+        private static bool IsPoweredTreeHit(HitData hit)
+        {
+            return hit != null && hit.m_damage.m_chop >= Functions.PoweredTreeDamage;
+        }
+
+        public static void Begin(HitData hit, out bool isPowered)
+        {
+            isPowered = IsPoweredTreeHit(hit);
+            if (!isPowered)
+            {
+                return;
+            }
+
+            _pendingHits ??= new Stack<HitData>();
+            _pendingHits.Push(hit.Clone());
+        }
+
+        public static void End(bool isPowered)
+        {
+            if (isPowered && _pendingHits != null && _pendingHits.Count > 0)
+            {
+                _ = _pendingHits.Pop();
+            }
+        }
+
+        public static void DestroySpawnedLog(TreeLog log)
+        {
+            if (_pendingHits == null || _pendingHits.Count == 0 || VeinMinePlugin.Instance == null)
+            {
+                return;
+            }
+
+            VeinMinePlugin.Instance.StartCoroutine(DestroyWhenDamageIsEnabled(log, _pendingHits.Peek().Clone()));
+        }
+
+        private static IEnumerator DestroyWhenDamageIsEnabled(TreeLog log, HitData hit)
+        {
+            // TreeLog deliberately ignores hits during its first 0.2 seconds.
+            yield return new WaitForSeconds(LogDamageDelay);
+            if (log != null)
+            {
+                log.Damage(hit);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(TreeBase), nameof(TreeBase.Damage))]
+    static class TreeBaseDamagePatch
+    {
+        static void Prefix(ref HitData hit)
+        {
+            _ = Functions.TryPrepareTreeFellingHit(hit);
+        }
+    }
+
+    [HarmonyPatch(typeof(TreeLog), nameof(TreeLog.Damage))]
+    static class TreeLogDamagePatch
+    {
+        static void Prefix(ref HitData hit)
+        {
+            _ = Functions.TryPrepareTreeFellingHit(hit);
+        }
+    }
+
+    [HarmonyPatch(typeof(TreeBase), "RPC_Damage")]
+    static class TreeBaseRpcDamagePatch
+    {
+        static void Prefix(HitData hit, out bool __state)
+        {
+            PoweredTreeDestruction.Begin(hit, out __state);
+        }
+
+        static Exception Finalizer(Exception __exception, bool __state)
+        {
+            PoweredTreeDestruction.End(__state);
+            return __exception;
+        }
+    }
+
+    [HarmonyPatch(typeof(TreeLog), nameof(TreeLog.Awake))]
+    static class TreeLogAwakePatch
+    {
+        static void Postfix(TreeLog __instance)
+        {
+            PoweredTreeDestruction.DestroySpawnedLog(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(TreeLog), "RPC_Damage")]
+    static class TreeLogRpcDamagePatch
+    {
+        static void Prefix(HitData hit, out bool __state)
+        {
+            PoweredTreeDestruction.Begin(hit, out __state);
+        }
+
+        static Exception Finalizer(Exception __exception, bool __state)
+        {
+            PoweredTreeDestruction.End(__state);
+            return __exception;
         }
     }
 

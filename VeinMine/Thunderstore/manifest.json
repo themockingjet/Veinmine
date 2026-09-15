@@ -1,9 +1,9 @@
 {
   "name": "StrVeinMine",
-  "version_number": "0.1.1",
-  "website_url": "https://github.com/WiseHorror/Veinmine",
-  "description": "StrVeinMine is an unofficial private-server compatibility build maintained by $tr on Hexium. No Thunderstore namespace or upload account is assigned; not endorsed by upstream authors or maintainers.",
+  "version_number": "0.2.2",
+  "website_url": "https://github.com/themockingjet/Veinmine",
+  "description": "Mine entire deposits and optionally fell trees/logs with one Veinmine-key axe strike. Built with a current SDK for current Valheim.",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2105"
+    "denikson-BepInExPack_Valheim-5.4.2202"
   ]
 }
