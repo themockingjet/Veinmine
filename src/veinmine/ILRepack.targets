@@ -1,0 +1,17 @@
+<Project>
+  <Target Name="MergeServerSync" AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Release' and Exists('$(TargetPath)') and Exists('$(OutputPath)ServerSync.dll')">
+    <ItemGroup>
+      <ValheimModAssembliesToMerge Include="$(TargetPath)" />
+      <ValheimModAssembliesToMerge Include="$(OutputPath)ServerSync.dll" />
+    </ItemGroup>
+    <ILRepack Parallel="true"
+              DebugInfo="true"
+              Internalize="true"
+              InputAssemblies="@(ValheimModAssembliesToMerge)"
+              OutputFile="$(TargetPath)"
+              TargetKind="SameAsPrimaryAssembly"
+              LibraryPath="$(OutputPath);$(ValheimManagedPath);$(BepInExPath)/core" />
+    <Delete Files="$(OutputPath)ServerSync.dll" />
+  </Target>
+</Project>

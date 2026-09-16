@@ -5,6 +5,8 @@
 - Remove the source-build instructions from the published README.
 - Bump the package version so package managers refresh the corrected README
   instead of retaining a cached 0.2.1 package.
+- Merge ServerSync into `Veinmine.dll` for Release packages; no separate
+  `ServerSync.dll` is distributed.
 
 ## 0.2.1
 

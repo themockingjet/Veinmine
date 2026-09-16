@@ -1,0 +1,8 @@
+<Project>
+  <Target Name="CopyPluginToRelease" AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Release' and '$(ReleaseOutputPath)' != ''">
+    <MakeDir Directories="$(ReleaseOutputPath)" />
+    <Copy SourceFiles="$(TargetPath)"
+          DestinationFolder="$(ReleaseOutputPath)" />
+  </Target>
+</Project>

@@ -34,11 +34,69 @@ allowlist:
 ## Installation
 
 1. Install the current BepInExPack for Valheim on the server and every client.
-2. Copy **both** `Veinmine.dll` and `ServerSync.dll` from the release package
-   into each `BepInEx/plugins` directory.
+2. Copy `Veinmine.dll` from the release package into each
+   `BepInEx/plugins` directory.
 3. Keep the same StrVeinMine version installed on the server and every client.
 
-The included version handshake rejects mismatched client/server plugin builds.
+The release contains the merged `Veinmine.dll`; it does not contain a separate
+`ServerSync.dll`, and users should not copy one from this package. The included
+version handshake rejects mismatched client/server plugin builds.
+
+## Build and release
+
+Load the shared Valheim reference environment, then run the standard validation
+Make targets automatically load `$HOME/.config/valheim-dev/env.sh` when it
+exists. Source that file manually only when using the variables from direct
+shell commands outside Make, then run the standard validation sequence from
+the repository root:
+
+```bash
+make preflight
+make build
+make package
+make verify-release
+```
+
+The build uses `VALHEIM_MANAGED_PATH` and `BEPINEX_PATH` from that environment.
+ServerSync is a build-time reference from
+`$BEPINEX_PATH/core/ServerSync.dll` and is merged into `Veinmine.dll` for
+Release builds. It is not stored in this repository or packaged separately.
+
+## Deploy to a test server
+
+Build, verify, and install the local package into the active BepInEx release:
+
+```bash
+make deploy-test-server TEST_SERVER=local
+```
+
+For an SSH test server, use `TEST_SERVER=user@host`. The helper installs the
+root-level DLLs into a separate `local-*` directory under
+`/opt/valheim/modpack/current/BepInEx/plugins`, preserves the server and
+maintenance-timer state without starting or stopping either one, and leaves
+the managed Hexium manifest unchanged.
+Use `TEST_SERVER_SSH_OPTIONS="-p 2222"` for a non-default SSH port. Remove
+the temporary install with:
+
+```bash
+make remove-test-server TEST_SERVER=local
+```
+
+The installer never calls `systemctl`. To batch-install several mods and
+restart once, stop the server and timer yourself, run this command from each
+mod repository, then start them once:
+
+```bash
+sudo systemctl stop valheim-restart.timer
+sudo systemctl stop valheim.service
+make deploy-test-server TEST_SERVER=local
+# Repeat from each mod repository.
+sudo systemctl start valheim.service
+sudo systemctl start valheim-restart.timer
+```
+
+Set `TEST_SERVER_SUDO=` when running directly as root. Use
+`TEST_PLUGIN_DIR=local-OtherName` to keep multiple local builds separate.
 
 ## Configuration
 
@@ -70,6 +128,6 @@ unrelated destructibles are unchanged.
 ## License and credits
 
 VeinMine is upstream work copyrighted by WiseHorror/Azumatt (2023), retained
-under the included [MIT license](./VeinMine/LICENSE.md). This repository's
-StrVeinMine packaging is an unofficial community compatibility build and is
-not an official upstream release.
+under the included [MIT license](./LICENSE.md). This repository's StrVeinMine
+packaging is an unofficial community compatibility build and is not an official
+upstream release.

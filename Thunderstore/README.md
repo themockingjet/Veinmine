@@ -34,11 +34,13 @@ allowlist:
 ## Installation
 
 1. Install the current BepInExPack for Valheim on the server and every client.
-2. Copy **both** `Veinmine.dll` and `ServerSync.dll` from the release package
-   into each `BepInEx/plugins` directory.
+2. Copy `Veinmine.dll` from the release package into each
+   `BepInEx/plugins` directory.
 3. Keep the same StrVeinMine version installed on the server and every client.
 
-The included version handshake rejects mismatched client/server plugin builds.
+The release contains the merged `Veinmine.dll`; it does not contain a separate
+`ServerSync.dll`, and users should not copy one from this package. The included
+version handshake rejects mismatched client/server plugin builds.
 
 ## Configuration
 
